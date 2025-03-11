@@ -1,0 +1,14 @@
+grafana:
+  enabled: true
+  service:
+    type: LoadBalancer
+
+prometheus:
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+
+alertmanager:
+  enabled: true
+
+prometheusOperator:
+  enabled: true

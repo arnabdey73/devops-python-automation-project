@@ -1,0 +1,46 @@
+# Terraform files
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+
+# Python cache and logs
+__pycache__/
+*.pyc
+*.pyo
+*.log
+
+# Helm chart artifacts
+charts/
+*.tgz
+
+# Kubernetes configuration files
+*.kubeconfig
+*.yaml~
+
+# Environment variables
+.env
+
+# OS-specific files
+.DS_Store
+
+# VS Code settings
+.vscode/
+*.code-workspace
+
+# Python virtual environments
+venv/
+.env/
+
+# Temporary files and logs
+*.swp
+*.bak
+*.tmp
+*.log
+*.out
+
+# Azure DevOps pipeline artifacts
+*.tfplan
+*.zip
+*.tar.gz
+

@@ -1,0 +1,52 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  AZURE_SUBSCRIPTION: '<your-subscription-id>'
+  RESOURCE_GROUP: 'aks-cluster-rg'
+  CLUSTER_NAME: 'aks-cluster'
+  LOCATION: 'East US'
+
+stages:
+  - stage: DeployInfrastructure
+    jobs:
+      - job: Terraform
+        steps:
+          - task: AzureCLI@2
+            inputs:
+              azureSubscription: $(AZURE_SUBSCRIPTION)
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                cd terraform
+                terraform init
+                terraform plan -out=tfplan
+                terraform apply -auto-approve tfplan
+
+  - stage: DeployApplication
+    jobs:
+      - job: HelmDeployment
+        steps:
+          - task: HelmInstaller@1
+            inputs:
+              helmVersionToInstall: 'latest'
+          - script: |
+              helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+              helm repo update
+              helm install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace
+              helm install my-app ./helm/my-app
+            displayName: 'Deploy Prometheus and Application'
+
+  - stage: PostDeployment
+    jobs:
+      - job: Monitoring
+        steps:
+          - script: |
+              python3 scripts/cost_monitor.py
+              python3 scripts/prometheus_monitor.py
+            displayName: 'Monitor Costs and Metrics'

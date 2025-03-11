@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: prometheus-alerts
+  labels:
+    prometheus: prometheus
+spec:
+  groups:
+    - name: example.rules
+      rules:
+        - alert: HighCPUUsage
+          expr: sum(rate(container_cpu_usage_seconds_total[1m])) > 0.8
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "High CPU usage detected"
+            description: "The CPU usage has been over 80% for more than 5 minutes."
